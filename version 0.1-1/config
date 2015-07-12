@@ -1,0 +1,8 @@
+name = 'ConfigTable'
+screen {
+	x = 12, y=30,
+	title = 'marmaid'
+	}
+otp = "string"
+
+

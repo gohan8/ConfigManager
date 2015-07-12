@@ -1,0 +1,203 @@
+   0  $accept : prog $end
+
+   1  prog : prog block
+   2       |
+
+   3  block : table
+   4        | cmd
+
+   5  cmd : '[' CONST_INT ']' '=' rhs
+   6      | ID '=' rhs
+
+   7  rhs : CONST_STR
+   8      | ID
+   9      | CONST_INT
+
+  10  table : ID '{' cmds '}'
+
+  11  cmds :
+  12       | cmds ',' cmd
+  13       | cmd
+
+state 0
+	$accept : . prog $end  (0)
+	prog : .  (2)
+
+	.  reduce 2
+
+	prog  goto 1
+
+
+state 1
+	$accept : prog . $end  (0)
+	prog : prog . block  (1)
+
+	$end  accept
+	ID  shift 2
+	'['  shift 3
+	.  error
+
+	block  goto 4
+	table  goto 5
+	cmd  goto 6
+
+
+state 2
+	cmd : ID . '=' rhs  (6)
+	table : ID . '{' cmds '}'  (10)
+
+	'='  shift 7
+	'{'  shift 8
+	.  error
+
+
+state 3
+	cmd : '[' . CONST_INT ']' '=' rhs  (5)
+
+	CONST_INT  shift 9
+	.  error
+
+
+state 4
+	prog : prog block .  (1)
+
+	.  reduce 1
+
+
+state 5
+	block : table .  (3)
+
+	.  reduce 3
+
+
+state 6
+	block : cmd .  (4)
+
+	.  reduce 4
+
+
+state 7
+	cmd : ID '=' . rhs  (6)
+
+	ID  shift 10
+	CONST_INT  shift 11
+	CONST_STR  shift 12
+	.  error
+
+	rhs  goto 13
+
+
+state 8
+	table : ID '{' . cmds '}'  (10)
+	cmds : .  (11)
+
+	ID  shift 14
+	'['  shift 3
+	'}'  reduce 11
+	','  reduce 11
+
+	cmd  goto 15
+	cmds  goto 16
+
+
+state 9
+	cmd : '[' CONST_INT . ']' '=' rhs  (5)
+
+	']'  shift 17
+	.  error
+
+
+state 10
+	rhs : ID .  (8)
+
+	.  reduce 8
+
+
+state 11
+	rhs : CONST_INT .  (9)
+
+	.  reduce 9
+
+
+state 12
+	rhs : CONST_STR .  (7)
+
+	.  reduce 7
+
+
+state 13
+	cmd : ID '=' rhs .  (6)
+
+	.  reduce 6
+
+
+state 14
+	cmd : ID . '=' rhs  (6)
+
+	'='  shift 7
+	.  error
+
+
+state 15
+	cmds : cmd .  (13)
+
+	.  reduce 13
+
+
+state 16
+	table : ID '{' cmds . '}'  (10)
+	cmds : cmds . ',' cmd  (12)
+
+	'}'  shift 18
+	','  shift 19
+	.  error
+
+
+state 17
+	cmd : '[' CONST_INT ']' . '=' rhs  (5)
+
+	'='  shift 20
+	.  error
+
+
+state 18
+	table : ID '{' cmds '}' .  (10)
+
+	.  reduce 10
+
+
+state 19
+	cmds : cmds ',' . cmd  (12)
+
+	ID  shift 14
+	'['  shift 3
+	.  error
+
+	cmd  goto 21
+
+
+state 20
+	cmd : '[' CONST_INT ']' '=' . rhs  (5)
+
+	ID  shift 10
+	CONST_INT  shift 11
+	CONST_STR  shift 12
+	.  error
+
+	rhs  goto 22
+
+
+state 21
+	cmds : cmds ',' cmd .  (12)
+
+	.  reduce 12
+
+
+state 22
+	cmd : '[' CONST_INT ']' '=' rhs .  (5)
+
+	.  reduce 5
+
+
+11 terminals, 7 nonterminals
+14 grammar rules, 23 states
